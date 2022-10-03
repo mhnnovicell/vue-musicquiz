@@ -24,20 +24,8 @@
 import { onMounted, ref } from 'vue';
 import { getDatabase, onValue, ref as firebaseRef } from 'firebase/database';
 import { getAuth } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-
 const db = getDatabase();
 const auth = getAuth();
-
-const docRef = doc(db, 'cities', 'SF');
-const docSnap = await getDoc(docRef);
-
-if (docSnap.exists()) {
-  console.log('Document data:', docSnap.data());
-} else {
-  // doc.data() will be undefined in this case
-  console.log('No such document!');
-}
 
 onMounted(() => {});
 </script>

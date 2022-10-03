@@ -3,6 +3,9 @@ import App from './App.vue';
 import './index.css';
 import { initializeApp } from 'firebase/app'; // TODO: Add SDKs for Firebase products that you want to use
 import router from './router/router';
+import client from './services/pocketbase';
+import { pocketBaseSymbol } from './services/symbols';
+import { supabase } from './supabase/supabase';
 
 // Import the functions you need from the SDKs you need
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -21,6 +24,8 @@ const firebaseApp = initializeApp(firebaseConfig);
 
 const app = createApp(App);
 app.use(router);
+
+app.provide(pocketBaseSymbol, client);
 
 // Initialize Firebase
 

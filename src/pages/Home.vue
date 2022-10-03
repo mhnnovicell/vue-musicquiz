@@ -7,6 +7,13 @@
         <span class="label-text">What is your name?</span>
       </label>
       <input
+        type="text"
+        placeholder="Navn"
+        class="input input-bordered input-secondary w-full max-w-xs my-2 text-white"
+        v-model="userName"
+        required
+      />
+      <input
         type="email"
         placeholder="Email"
         class="input input-bordered input-secondary w-full max-w-xs my-2 text-white"
@@ -14,20 +21,25 @@
         pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
         required
       />
+
       <input
         type="password"
         placeholder="Adgangskode"
         class="input input-bordered input-secondary w-full max-w-xs my-2 text-white"
         v-model="password"
+        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"
         required
       />
+
       <button
         @click="register"
         class="btn mt-2"
-        :class="password === '' ? 'btn-disabled' : ''"
+        :class="userName === '' ? 'btn-disabled' : ''"
       >
         Submit
       </button>
+
+      <button @click="register" class="btn mt-2">Login with facebook</button>
     </div>
 
     <div class="toast toast-end max-w-md">
@@ -57,37 +69,35 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import {
-  getAuth,
-  onAuthStateChanged,
-  createUserWithEmailAndPassword,
-} from 'firebase/auth';
-import { useRouter } from 'vue-router'; // import router
+
+import { useRouter } from 'vue-router';
+import { supabase } from '../supabase/supabase';
+// import router
 const email = ref('');
+const userName = ref('');
 const password = ref('');
+
 const errorMessages = ref('');
 const router = useRouter();
+const loading = ref(false);
 
 //Firebase docs: https://firebase.google.com/docs/auth/web/manage-users?hl=en&authuser=0
 
-const auth = getAuth();
 // get a reference to our vue router
 
-const register = () => {
-  createUserWithEmailAndPassword(auth, email.value, password.value)
-    .then((userCredential) => {
-      // Signed in
-      console.log(userCredential, 'userCredential');
-      const user = userCredential.user;
-      router.push('/questions');
-      // ...
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-
-      errorMessages.value = error;
-      // ..
+const register = async () => {
+  try {
+    const { user, session, error } = await supabase.auth.signIn({
+      provider: 'facebook',
     });
+    console.log(user, 'user');
+    console.log(session, 'session');
+
+    if (error) throw error;
+  } catch (error: any) {
+    errorMessages.value = error.error_description || error.message;
+  } finally {
+    loading.value = false;
+  }
 };
 </script>

@@ -16,10 +16,15 @@ import {
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
 import { useRouter } from 'vue-router';
+import { supabase } from './supabase/supabase';
+
 const router = useRouter();
 const auth = getAuth();
 
 onMounted(() => {
+  supabase.auth.onAuthStateChange((event, session) => {
+    console.log(event, session);
+  });
   onAuthStateChanged(auth, (user) => {
     if (user) {
       router.push('/questions');
